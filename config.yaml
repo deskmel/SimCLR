@@ -5,17 +5,27 @@ fine_tune_from: None
 log_every_n_steps: 50
 weight_decay: 10e-6
 fp16_precision: False
+<<<<<<< HEAD
 loss_type : nt_xent
 model:
   out_dim: 64
+=======
+loss_type : marginal_triplet
+model:
+  out_dim: 256
+>>>>>>> 9978081be2c563bb5c74cb1442eb737dcda6b811
   base_model: "resnet50"
 
 dataset:
   s: 1
-  input_shape: (96,96,3)
+  input_shape: (32,32,3)
   num_workers: 0
   valid_size: 0.05
 
 loss:
+<<<<<<< HEAD
   temperature: 0.5
+=======
+  m: 1
+>>>>>>> 9978081be2c563bb5c74cb1442eb737dcda6b811
   use_cosine_similarity: True

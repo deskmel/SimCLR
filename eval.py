@@ -127,11 +127,16 @@ def linear_model_eval(X_train, y_train, X_test, y_test):
 if __name__ == "__main__":
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print("Using device:", device)
-    folder_name = '/data2/meng/SimCLR/SimCLRpytorch/SimCLR/runs/May17_19-02-02_IEEE-8889-1080Ti'
+    folder_name = './runs/May17_20-55-07_userme'
     checkpoints_folder = os.path.join(folder_name, 'checkpoints')
     config = yaml.load(open(os.path.join(checkpoints_folder, "config.yaml"), "r"))
+<<<<<<< HEAD
+    data_root = './data/'
+    eval(checkpoints_folder,data_root,device)
+=======
     data_root = '/data2/meng/SimCLR/SimCLRpytorch/SimCLR/data/'
     model = load_model(checkpoints_folder,device)
     eval(model,data_root,device)
+>>>>>>> 8a278baf724669421f7589281b9dadd0cdbc710b
     
     #load_dataset()

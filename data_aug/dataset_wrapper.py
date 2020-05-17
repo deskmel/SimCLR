@@ -2,7 +2,8 @@ import numpy as np
 from torch.utils.data import DataLoader
 from torch.utils.data.sampler import SubsetRandomSampler
 import torchvision.transforms as transforms
-from data_aug.gaussian_blur import GaussianBlur
+#from data_aug.gaussian_blur import GaussianBlur
+from gaussian_blur import GaussianBlur
 from torchvision import datasets
 
 np.random.seed(0)
@@ -22,7 +23,7 @@ class DataSetWrapper(object):
 
         #train_dataset = datasets.STL10('/data2/meng/SimCLR/SimCLRpytorch/SimCLR/data/', split='train+unlabeled', download=False,
         #                               transform=SimCLRDataTransform(data_augment))
-        train_dataset = datasets.CIFAR10('./data',download=True,transform=SimCLRDataTransform(data_augment))
+        train_dataset = datasets.CIFAR10('./data/',download=True,transform=SimCLRDataTransform(data_augment))
         train_loader, valid_loader = self.get_train_validation_data_loaders(train_dataset)
         return train_loader, valid_loader
 
@@ -67,7 +68,7 @@ class SimCLRDataTransform(object):
         xj = self.transform(sample)
         return xi, xj
 if __name__ == "__main__":
-    dataset = DataSetWrapper(batch_size=1,num_workers=1,valid_size=0.05,input_shape='(96,96,3)',s=1)
+    dataset = DataSetWrapper(batch_size=1,num_workers=1,valid_size=0.05,input_shape='(32,32,3)',s=1)
     train_loader, valid_loader = dataset.get_data_loaders()
     for sample in train_loader:
         print(sample)

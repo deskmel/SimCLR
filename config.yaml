@@ -5,7 +5,7 @@ fine_tune_from: None
 log_every_n_steps: 50
 weight_decay: 10e-6
 fp16_precision: False
-loss_type : nt_logistic
+loss_type : marginal_triplet
 model:
   out_dim: 256
   base_model: "resnet18"
@@ -17,5 +17,5 @@ dataset:
   valid_size: 0.05
 
 loss:
-  temperature: 0.5
+  m: 0
   use_cosine_similarity: True

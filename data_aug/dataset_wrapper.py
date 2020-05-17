@@ -22,7 +22,7 @@ class DataSetWrapper(object):
 
         #train_dataset = datasets.STL10('/data2/meng/SimCLR/SimCLRpytorch/SimCLR/data/', split='train+unlabeled', download=False,
         #                               transform=SimCLRDataTransform(data_augment))
-        train_dataset = datasets.CIFAR10('/data2/meng/SimCLR/SimCLRpytorch/SimCLR/data/',download=True,transform=SimCLRDataTransform(data_augment))
+        train_dataset = datasets.CIFAR10('./data',download=True,transform=SimCLRDataTransform(data_augment))
         train_loader, valid_loader = self.get_train_validation_data_loaders(train_dataset)
         return train_loader, valid_loader
 

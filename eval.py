@@ -131,6 +131,7 @@ if __name__ == "__main__":
     checkpoints_folder = os.path.join(folder_name, 'checkpoints')
     config = yaml.load(open(os.path.join(checkpoints_folder, "config.yaml"), "r"))
     data_root = '/data2/meng/SimCLR/SimCLRpytorch/SimCLR/data/'
-    eval(checkpoints_folder,data_root,device)
+    model = load_model(checkpoints_folder,device)
+    eval(model,data_root,device)
     
     #load_dataset()

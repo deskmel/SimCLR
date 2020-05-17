@@ -37,7 +37,7 @@ class SimCLR(object):
         self.device = self._get_device()
         self.writer = SummaryWriter()
         self.dataset = dataset
-
+        self.model = ResNetSimCLR(**self.config["model"]).to(self.device)
         self.criterion = self._make_loss()
     def _make_loss(self):
         if (self.config['loss_type']=='nt_logistic'):

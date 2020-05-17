@@ -60,6 +60,14 @@ class NTXentLoss(torch.nn.Module):
         logits /= self.temperature
 
         labels = torch.zeros(2 * self.batch_size).to(self.device).long()
+        print(labels)
         loss = self.criterion(logits, labels)
 
         return loss / (2 * self.batch_size)
+if __name__ == "__main__":
+    Loss = NTXentLoss('cpu',4,0.5,True)
+    print(Loss.mask_samples_from_same_repr)
+    xi = torch.rand((4,10))
+    xj = torch.rand((4,10))
+    loss = Loss(xi,xj)
+    print(loss)

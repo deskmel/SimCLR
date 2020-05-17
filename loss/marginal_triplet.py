@@ -47,16 +47,16 @@ class MarginalTripletLoss(torch.nn.Module):
         # filter out the scores from the positive samples
         l_pos = torch.diag(similarity_matrix, self.batch_size)
         r_pos = torch.diag(similarity_matrix, -self.batch_size)
-        positives = torch.cat([l_pos, r_pos]).view(2 * self.batch_size, 1)
+        positives = torch.cat([l_pos, r_pos]).view(2 * self.batch_size, 1) 
 
-        negatives = similarity_matrix[self.mask_samples_from_same_repr].view(2 * self.batch_size, -1)
-        
-        logits = torch.cat((positives, negatives), dim=1)
-        loss = self.activation(torch.sum(logits) + self.m)
-
-        return loss / (2*self.batch_size)
+        negatives = similarity_matrix[self.mask_samples_from_same_repr].view(2 * self.batch_size, -1) 
+        logits =negatives-positives + self.m
+        #print(logits.shape)
+        loss = torch.sum(self.activation(logits))
+        #print(loss)
+        return loss / (4*self.batch_size*(self.batch_size-2))
 if __name__ == "__main__":
-    Loss = MarginalTripletLoss('cpu',4,0.05,True)
+    Loss = MarginalTripletLoss('cpu',4,1,True)
     print(Loss.mask_samples_from_same_repr)
     xi = torch.rand((4,10))
     xj = torch.rand((4,10))

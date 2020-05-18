@@ -2,16 +2,18 @@
 这个SimCLR代码实现是基于 https://github.com/sthalles/SimCLR 实现的
 除了论文使用的NT-Xent Loss 之外，添加了两种论文中讨论的 Contrastive Loss 分别是NT-logistic Loss 和 Marginal Triplet Loss
 
-Loss | 数学表达形式
-- | -
-NT-Xent | ![](https://latex.codecogs.com/gif.latex?u^Tv^+/\tau-log\sum_{v\in\{v^+,v^-\}}exp(u^Tv/\tau))
-NT-Logistic |![](https://latex.codecogs.com/gif.latex?log\sigma(u^Tv^+/\tau)+log\sigma(-u^Tv^-/\tau))
-Marginal Triplet |![](https://latex.codecogs.com/gif.latex?-max(u^Tv^--u^Tv^++m,0))
+Loss 和他的数学表达形式
+
+NT-Xent  ![](https://latex.codecogs.com/gif.latex?u^Tv^+/\tau-log\sum_{v\in\{v^+,v^-\}}exp(u^Tv/\tau))
+
+NT-Logistic ![](https://latex.codecogs.com/gif.latex?log\sigma(u^Tv^+/\tau)+log\sigma(-u^Tv^-/\tau))
+
+Marginal Triplet ![](https://latex.codecogs.com/gif.latex?-max(u^Tv^--u^Tv^++m,0))
 
 并在CIFAR10 数据集上做了对比实验
 下面给出每种loss最好的实验结果
 
- Loss|Resnet | Feature demension | batchsize | epoch | $\tau$ / m|CIFAR10 ACC|
+ Loss|Resnet | Feature demension | batchsize | epoch | temperature / m|CIFAR10 ACC|
 -|-|-|-|-|-|-
 nt_xent|resnet50|128|128|100|0.5|0.8387
 nt_logistic|resnet50|128|128|100|0.5|0.8094
@@ -46,10 +48,12 @@ CIFAR10数据集预处理和加载
 上文中提到的 marginal triplet loss 表达的形式是对于一对正负样本，其含义便是期望输入样本和正样本的相似度减去和负样本的相似度可以大于阈值m值。
 扩展到本文中的情况便是,对于每一个样本，他有一个对应的正样本和2*(batchsize-1)个负样本,对这个样本每一个负样本我们重复使用同一个正样本计算marginal triplet loss。首先定义
 
+
 ![](https://latex.codecogs.com/svg.latex?l(i,j)%20=%20\frac{1}{2*(N-1)}\sum_{k=1}^{2N}%201_{(k\neq%20i,j)}%20max(s_{i,k}-s_{i,j}+m,0))
 
 
 总的Loss便为
+
 ![](https://latex.codecogs.com/svg.latex?L%20=%20\frac{1}{2N}\sum_{i}^{N}[l(2i,2i+1)+l(2i+1,2i)])
 
 ###### NT_Logistic

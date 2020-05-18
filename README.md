@@ -4,9 +4,9 @@
 
 Loss | 数学表达形式
 - | -
-NT-Xent | $u^Tv^+/\tau-log\sum_{v\in\{v^+,v^-\}}exp(u^Tv/\tau)$
-NT-Logistic |$log\sigma(u^Tv^+/\tau)+log\sigma(-u^Tv^-/\tau)$
-Marginal Triplet |$-max(u^Tv^--u^Tv^++m,0)$
+NT-Xent | ![](https://latex.codecogs.com/gif.latex?u^Tv^+/\tau-log\sum_{v\in\{v^+,v^-\}}exp(u^Tv/\tau))
+NT-Logistic |![](https://latex.codecogs.com/gif.latex?log\sigma(u^Tv^+/\tau)+log\sigma(-u^Tv^-/\tau))
+Marginal Triplet |![](https://latex.codecogs.com/gif.latex?-max(u^Tv^--u^Tv^++m,0))
 
 并在CIFAR10 数据集上做了对比实验
 下面给出每种loss最好的实验结果
@@ -44,24 +44,20 @@ CIFAR10数据集预处理和加载
 首先simclr训练时，每个样本会产生一对正样本，而输入时同一个batch里的其他样本都会被当作负样本。
 ###### Marginal Triplet Loss
 上文中提到的 marginal triplet loss 表达的形式是对于一对正负样本，其含义便是期望输入样本和正样本的相似度减去和负样本的相似度可以大于阈值m值。
-扩展到本文中的情况便是,对于每一个样本，他有一个对应的正样本和$2*(batchsize-1)$个负样本,对这个样本每一个负样本我们重复使用同一个正样本计算marginal triplet loss。首先定义
-$$
-l(i,j) = \frac{1}{2*(N-1)}\sum_{k=1}^{2N} 1_{(k\neq i,j)} max(s_{i,k}-s_{i,j}+m,0)
-$$
+扩展到本文中的情况便是,对于每一个样本，他有一个对应的正样本和2*(batchsize-1)个负样本,对这个样本每一个负样本我们重复使用同一个正样本计算marginal triplet loss。首先定义
+
+![](https://latex.codecogs.com/svg.latex?l(i,j)%20=%20\frac{1}{2*(N-1)}\sum_{k=1}^{2N}%201_{(k\neq%20i,j)}%20max(s_{i,k}-s_{i,j}+m,0))
+
+
 总的Loss便为
-$$L = \frac{1}{2N}\sum_{i}^{N}[l(2i,2i+1)+l(2i+1,2i)]$$
+![](https://latex.codecogs.com/svg.latex?L%20=%20\frac{1}{2N}\sum_{i}^{N}[l(2i,2i+1)+l(2i+1,2i)])
 
 ###### NT_Logistic
-NT_logistic 可以理解为一种逻辑回归在这里的扩展版本。对于每个样本，他存在一个对应的正样本和$2(N-1)$个负样本。若把 $\sigma(s_{i,j}/\tau)$视为样本$i,j$为相似样本的可能性，这个loss的目标即为获得最大似然。 因此定义
+NT_logistic 可以理解为一种逻辑回归在这里的扩展版本。对于每个样本，他存在一个对应的正样本和$2(N-1)$个负样本。若把 $\sigma(s_{i,j}/\tau)$视为样本i,j为相似样本的可能性，这个loss的目标即为获得最大似然。 因此定义
 
-$$
-l(i,j) = \left\{ 
-\begin{aligned}
- & log(\sigma(s_{i,j}/\tau)) & if (i=j-1,j=i-1)\\
- & log(\sigma(-s_{i,j}/\tau)) & otherwise\\
-\end{aligned}
-\right.
-$$
+
+
+![](https://latex.codecogs.com/gif.latex?l%28i%2Cj%29%20%3D%20%5Cleft%5C%7B%20%5Cbegin%7Baligned%7D%20%26%20log%28%5Csigma%28s_%7Bi%2Cj%7D/%5Ctau%29%29%20%26%20if%20%28i%3Dj-1%2Cj%3Di-1%29%5C%5C%20%26%20log%28%5Csigma%28-s_%7Bi%2Cj%7D/%5Ctau%29%29%20%26%20otherwise%5C%5C%20%5Cend%7Baligned%7D%20%5Cright.)
 
 不过一开始个人只是简单将所有对数似然损失加起来，并没有考虑样本数量的不对称性，因此一开始的实现为
 
@@ -74,10 +70,8 @@ L = \frac{1}{2N*(2N-1)}\sum_{i=1}^{2N}\sum_{j=1}^{2N}1_{(j\neq i)}(l(i,j))$$
 
 因此在考虑了转发样本数量的情况下，将loss修改为
 
-$$
-L = \frac{1}{4N*(N-1)}\sum_{i=1}^{N} (4(N-1)l(2i,2i+1)+\sum_{j=1}^{2N}1_{(j\neq 2i,j\neq 2i+1)}(l(2i,j)+l(2i+1,j)))
-$$
 
+![](https://latex.codecogs.com/svg.latex?L%20=%20\frac{1}{4N(N-1)}\sum_{i=1}^{N}%20(4(N-1)l(2i,2i+1)+\sum_{j=1}^{2N}1_{(j\neq%202i,j\neq%202i+1)}(l(2i,j)+l(2i+1,j))))
 事实上相当于扩展正样本数量，使得loss计算时，重复计算正样本的对数似然误差至其和负样本数量一致。
 ##### 基于cifar10数据集修改网络模型结果和数据预处理
 第一次模型基于三种loss的结果如下

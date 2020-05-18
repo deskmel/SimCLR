@@ -11,13 +11,23 @@ class ResNetSimCLR(nn.Module):
                             "resnet50": models.resnet50(pretrained=False)}
 
         resnet = self._get_basemodel(base_model)
+        if (base_model == "resnet50"):
+            self.features = []
+            for name, module in resnet.named_children():
+                if name == 'conv1':
+                    module = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
+                if not isinstance(module, nn.Linear) and not isinstance(module, nn.MaxPool2d):
+                    self.features.append(module)
+            #print(self.features)
+            self.features = nn.Sequential(*self.features)
+            
         num_ftrs = resnet.fc.in_features
 
-        self.features = nn.Sequential(*list(resnet.children())[:-1])
-
+        #self.features = nn.Sequential(*list(resnet.children())[:-1])
+        #print(num_ftrs)
         # projection MLP
-        self.l1 = nn.Linear(num_ftrs, num_ftrs)
-        self.l2 = nn.Linear(num_ftrs, out_dim)
+        self.l1 = nn.Linear(num_ftrs, 512)
+        self.l2 = nn.Linear(512, out_dim)
 
     def _get_basemodel(self, model_name):
         try:
@@ -34,4 +44,6 @@ class ResNetSimCLR(nn.Module):
         x = self.l1(h)
         x = F.relu(x)
         x = self.l2(x)
-        return h, x
+        return h,x
+if __name__ == "__main__":
+    model = ResNetSimCLR('resnet50',64)

@@ -37,7 +37,7 @@ class SimCLR(object):
         self.device = self._get_device()
         self.writer = SummaryWriter()
         self.dataset = dataset
-
+        self.model = ResNetSimCLR(**self.config["model"]).to(self.device)
         self.criterion = self._make_loss()
     def _make_loss(self):
         if (self.config['loss_type']=='nt_logistic'):
@@ -71,7 +71,7 @@ class SimCLR(object):
 
         train_loader, valid_loader = self.dataset.get_data_loaders()
 
-        model = ResNetSimCLR(**self.config["model"]).to(self.device)
+        model = self.model
         model = self._load_pre_trained_weights(model)
 
         optimizer = torch.optim.Adam(model.parameters(), 3e-4, weight_decay=eval(self.config['weight_decay']))

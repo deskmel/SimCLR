@@ -54,7 +54,7 @@ class MarginalTripletLoss(torch.nn.Module):
         #print(logits.shape)
         loss = torch.sum(self.activation(logits))
         #print(loss)
-        return loss / (4*self.batch_size*(self.batch_size-2))
+        return loss / (4*self.batch_size*(self.batch_size-1))
 if __name__ == "__main__":
     Loss = MarginalTripletLoss('cpu',4,1,True)
     print(Loss.mask_samples_from_same_repr)

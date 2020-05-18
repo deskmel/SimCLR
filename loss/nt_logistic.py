@@ -49,10 +49,17 @@ class NTLogisticLoss(torch.nn.Module):
         r_pos = torch.diag(similarity_matrix, -self.batch_size)
         positives = torch.cat([l_pos, r_pos]).view(2 * self.batch_size, 1)
         negatives = similarity_matrix[self.mask_samples_from_same_repr].view(2 * self.batch_size, -1)*-1
-        logits = torch.cat((positives, negatives), dim=1)
-        logits /= self.temperature
-        logits = self.activation(logits)
-        logits = torch.log(logits)
+        positives /= self.temperature
+        positives= torch.log(self.activation(positives))
+        negatives/= self.temperature
+        negatives = torch.log(self.activation(negatives))
+        logits = positives +negatives
+        print(logits.size())
+        #rint(negatives.size())
+        #logits = torch.cat((positives, negatives), dim=1)
+        #logits /= self.temperature
+        #logits = self.activation(logits)
+        #logits = torch.log(logits)
         loss = torch.sum(logits)
         return -loss / (4*(self.batch_size-1)*self.batch_size)
 if __name__ == "__main__":

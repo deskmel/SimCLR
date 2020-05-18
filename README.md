@@ -61,7 +61,7 @@ CIFAR10数据集预处理和加载
 ![](https://latex.codecogs.com/svg.latex?L%20=%20\frac{1}{2N}\sum_{i}^{N}[l(2i,2i+1)+l(2i+1,2i)])
 
 ###### NT_Logistic
-NT_logistic 可以理解为一种逻辑回归在这里的扩展版本。对于每个样本，他存在一个对应的正样本和$2(N-1)$个负样本。若把 $\sigma(s_{i,j}/\tau)$视为样本i,j为相似样本的可能性，这个loss的目标即为获得最大似然。 因此定义
+NT_logistic 可以理解为一种逻辑回归在这里的扩展版本。对于每个样本，他存在一个对应的正样本和2(N-1)个负样本。若把 ![](https://latex.codecogs.com/svg.latex?\sigma(s_{i,j}/\tau))视为样本i,j为相似样本的可能性，这个loss的目标即为获得最大似然。 因此定义
 
 
 
@@ -69,8 +69,7 @@ NT_logistic 可以理解为一种逻辑回归在这里的扩展版本。对于�
 
 不过一开始个人只是简单将所有对数似然损失加起来，并没有考虑样本数量的不对称性，因此一开始的实现为
 
-$$
-L = \frac{1}{2N*(2N-1)}\sum_{i=1}^{2N}\sum_{j=1}^{2N}1_{(j\neq i)}(l(i,j))$$
+![](https://latex.codecogs.com/svg.latex?L%20=%20\frac{1}{2N*(2N-1)}\sum_{i=1}^{2N}\sum_{j=1}^{2N}1_{(j\neq%20i)}(l(i,j)))
 
 即对每一个样本计算他和其他样本之间的对数似然误差
 

@@ -1,9 +1,10 @@
 #### 简介
 这个SimCLR代码实现是基于 https://github.com/sthalles/SimCLR 实现的
 除了论文使用的NT-Xent Loss 之外，添加了两种论文中讨论的 Contrastive Loss 分别是NT-logistic Loss 和 Marginal Triplet Loss
+
 Loss | 数学表达形式
 - | -
-NT-Xent |$u^Tv^+/\tau-log\sum_{v\in\{v^+,v^-\}}exp(u^Tv/\tau)$
+NT-Xent | $u^Tv^+/\tau-log\sum_{v\in\{v^+,v^-\}}exp(u^Tv/\tau)$
 NT-Logistic |$log\sigma(u^Tv^+/\tau)+log\sigma(-u^Tv^-/\tau)$
 Marginal Triplet |$-max(u^Tv^--u^Tv^++m,0)$
 
@@ -52,6 +53,7 @@ $$L = \frac{1}{2N}\sum_{i}^{N}[l(2i,2i+1)+l(2i+1,2i)]$$
 
 ###### NT_Logistic
 NT_logistic 可以理解为一种逻辑回归在这里的扩展版本。对于每个样本，他存在一个对应的正样本和$2(N-1)$个负样本。若把 $\sigma(s_{i,j}/\tau)$视为样本$i,j$为相似样本的可能性，这个loss的目标即为获得最大似然。 因此定义
+
 $$
 l(i,j) = \left\{ 
 \begin{aligned}
@@ -60,16 +62,22 @@ l(i,j) = \left\{
 \end{aligned}
 \right.
 $$
+
 不过一开始个人只是简单将所有对数似然损失加起来，并没有考虑样本数量的不对称性，因此一开始的实现为
-$$L = \frac{1}{2N*(2N-1)}\sum_{i=1}^{2N}\sum_{j=1}^{2N}1_{(j\neq i)}(l(i,j)) $$
+
+$$
+L = \frac{1}{2N*(2N-1)}\sum_{i=1}^{2N}\sum_{j=1}^{2N}1_{(j\neq i)}(l(i,j))$$
+
 即对每一个样本计算他和其他样本之间的对数似然误差
 
 但是这样训练的结果存在比较大的问题，即逻辑回归本质类似一个线性分类器，在正负样本有强烈不均的情况下，训练结果会有较大误差
 
 因此在考虑了转发样本数量的情况下，将loss修改为
+
 $$
 L = \frac{1}{4N*(N-1)}\sum_{i=1}^{N} (4(N-1)l(2i,2i+1)+\sum_{j=1}^{2N}1_{(j\neq 2i,j\neq 2i+1)}(l(2i,j)+l(2i+1,j)))
 $$
+
 事实上相当于扩展正样本数量，使得loss计算时，重复计算正样本的对数似然误差至其和负样本数量一致。
 ##### 基于cifar10数据集修改网络模型结果和数据预处理
 第一次模型基于三种loss的结果如下

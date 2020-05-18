@@ -4,11 +4,14 @@
 
 Loss 和他的数学表达形式
 
-NT-Xent  ![](https://latex.codecogs.com/gif.latex?u^Tv^+/\tau-log\sum_{v\in\{v^+,v^-\}}exp(u^Tv/\tau))
+NT-Xent  
+![](https://latex.codecogs.com/gif.latex?u^Tv^+/\tau-log\sum_{v\in\{v^+,v^-\}}exp(u^Tv/\tau))
 
-NT-Logistic ![](https://latex.codecogs.com/gif.latex?log\sigma(u^Tv^+/\tau)+log\sigma(-u^Tv^-/\tau))
+NT-Logistic 
+![](https://latex.codecogs.com/gif.latex?log\sigma(u^Tv^+/\tau)+log\sigma(-u^Tv^-/\tau))
 
-Marginal Triplet ![](https://latex.codecogs.com/gif.latex?-max(u^Tv^--u^Tv^++m,0))
+Marginal Triplet 
+![](https://latex.codecogs.com/gif.latex?-max(u^Tv^--u^Tv^++m,0))
 
 并在CIFAR10 数据集上做了对比实验
 下面给出每种loss最好的实验结果
@@ -22,6 +25,7 @@ marginal_triplet|resnet50|128|128|100|1|0.8100
 
 #### 代码目录
 个人实现的代码主要包括
+
 两个Loss函数
 ```
 ./loss/nt_logistic.py
@@ -79,7 +83,7 @@ L = \frac{1}{2N*(2N-1)}\sum_{i=1}^{2N}\sum_{j=1}^{2N}1_{(j\neq i)}(l(i,j))$$
 事实上相当于扩展正样本数量，使得loss计算时，重复计算正样本的对数似然误差至其和负样本数量一致。
 ##### 基于cifar10数据集修改网络模型结果和数据预处理
 第一次模型基于三种loss的结果如下
- Loss|Resnet | Feature demension | batchsize | epoch | $\tau$ / m|CIFAR10 ACC|
+ Loss|Resnet | Feature demension | batchsize | epoch | t / m|CIFAR10 ACC|
 -|-|-|-|-|-|-
 nt_xent|resnet50|256|512|100|0.5|0.5701
 nt_logistic|resnet50|256|512|100|0.5|0.3314
@@ -90,7 +94,7 @@ marginal_triplet|resnet50|256|512|100|1|0.5329
 而其他结果不理想的原因在论文中得到解答，由于cifar10数据集输入图片大小（32，32）比较小，resnet50第一个7*7的conv和maxpool严重的削弱了他的特征表达能力。因此论文附录中提到要修改第一个conv为3*3 stride为1并删去 maxpool1，此外在数据预处理的阶段还去除了高斯模糊变换，并设置颜色变换的力度为0.5。
 因此个人重新修改了模型和数据预处理，重新训练。
 此次的结果为
- Loss|Resnet | Feature demension | batchsize | epoch | $\tau$ / m|CIFAR10 ACC|
+ Loss|Resnet | Feature demension | batchsize | epoch | t / m|CIFAR10 ACC|
 -|-|-|-|-|-|-
 nt_xent|resnet50|128|128|100|0.5|0.8387
 nt_logistic|resnet50|128|128|100|0.5|0.8094
@@ -98,7 +102,7 @@ marginal_triplet|resnet50|128|128|100|1|0.8100
 
 
 ##### 参数搜索的结果
- Loss|Resnet | Feature demension | batchsize | epoch | $\tau$ / m|CIFAR10 ACC|
+ Loss|Resnet | Feature demension | batchsize | epoch | t / m|CIFAR10 ACC|
 -|-|-|-|-|-|-
 nt_xent|resnet50|128|128|100|0.1|0.8387
 nt_xent|resnet50|128|128|100|0.5|0.8387

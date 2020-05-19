@@ -1,4 +1,4 @@
-#### 简介
+### 简介
 这个SimCLR代码是基于 https://github.com/sthalles/SimCLR 实现的
 
 在此基础上，添加了两种论文中讨论的 Contrastive Loss : NT-logistic Loss 和 Marginal Triplet Loss
@@ -13,17 +13,17 @@ nt_xent|resnet50|128|128|100|0.5|0.8387
 nt_logistic|resnet50|128|128|100|0.5|0.8094
 marginal_triplet|resnet50|128|128|100|1|0.8100
 
-##### 三种Loss 和他的数学表达形式
+#### 三种Loss 和他的数学表达形式
 
-###### NT-Xent  
+##### NT-Xent  
 
 ![](https://latex.codecogs.com/gif.latex?u^Tv^+/\tau-log\sum_{v\in\{v^+,v^-\}}exp(u^Tv/\tau))
 
-###### NT-Logistic 
+##### NT-Logistic 
 
 ![](https://latex.codecogs.com/gif.latex?log\sigma(u^Tv^+/\tau)+log\sigma(-u^Tv^-/\tau))
 
-###### Marginal Triplet 
+##### Marginal Triplet 
 
 ![](https://latex.codecogs.com/gif.latex?-max(u^Tv^--u^Tv^++m,0))
 
@@ -32,8 +32,8 @@ marginal_triplet|resnet50|128|128|100|1|0.8100
 
 
 
-#### 代码目录
-个人实现的代码主要包括
+### 代码目录
+个人实现和修改的代码主要包括
 
 两个Loss函数
 ```
@@ -44,7 +44,7 @@ CIFAR10数据集预处理和加载
 ```
 ./data_aug/data_wrapper.py
 ```
-基于原论文的形容修改resnet50的结构
+基于原论文的附录关于cifar10实验的描述修改了resnet50的结构（修改conv1为3\*3删除第一个maxpool）
 ```
 ./model/resnet_simclr.py
 ```
@@ -52,11 +52,11 @@ CIFAR10数据集预处理和加载
 ```
 ./eval.py
 ```
-#### 实验过程和一些个人理解
-##### Loss 相关实现
-首先simclr训练时，每个样本会产生一对正样本，而输入时同一个batch里的其他样本都会被当作负样本。Loss的目的往往是训练一个线性分类器，将某样本对应的正样本和负样本进行区分。
-###### Marginal Triplet Loss
-上文中提到的 marginal triplet loss 表达的形式是对于一对正负样本求loss。其含义便是期望输入样本和正样本的相似度减去和负样本的相似度可以大于阈值m值。
+### 实验过程和一些个人理解
+#### Loss 相关实现
+首先simclr训练时，每个样本会产生一对正样本，而输入时同一个batch里的其他样本都会被当作这对样本负样本。而Loss的目的是训练一个线性分类器，将某样本对应的正样本和负样本进行区分。
+##### Marginal Triplet Loss
+上文中提到的 marginal triplet loss 表达的形式是对于一对正负样本，求样本和正负样本相似度的差值并加上阈值m。其目标是希望输入样本和正样本的相似度减去和负样本的相似度可以大于阈值m值。
 
 扩展到本文中的情况便是,对于每一个样本，他有一个对应的正样本和2*(batchsize-1)个负样本,对这个样本每一个负样本我们重复使用同一个正样本计算marginal triplet loss。
 
@@ -69,7 +69,7 @@ CIFAR10数据集预处理和加载
 
 ![](https://latex.codecogs.com/svg.latex?L%20=%20\frac{1}{2N}\sum_{i}^{N}[l(2i,2i+1)+l(2i+1,2i)])
 
-###### NT_Logistic
+##### NT_Logistic
 NT_logistic 可以理解为一种逻辑回归在这里的扩展版本。对于每个样本，他存在一个对应的正样本和2(N-1)个负样本。若把 ![](https://latex.codecogs.com/svg.latex?\sigma(s_{i,j}/\tau))视为样本i,j为相似样本的可能性，这个loss的目标即为获得最大似然估计。 
 
 因此定义其对数似然损失为
@@ -90,7 +90,7 @@ NT_logistic 可以理解为一种逻辑回归在这里的扩展版本。对于�
 
 这事实上相当于扩展正样本数量，使得loss计算时，重复计算正样本的对数似然误差至其和负样本数量一致。
 
-##### 基于cifar10数据集修改网络模型结果和数据预处理
+#### 基于cifar10数据集修改网络模型结果和数据预处理
 第一次模型基于三种loss(nt_logistic的实现为最初版本）的结果如下
 
  Loss|Resnet | Feature demension | batchsize | epoch | t / m|CIFAR10 ACC|
@@ -101,7 +101,9 @@ marginal_triplet|resnet50|256|512|100|1|0.5329
 
 结果并不理想。 其中nt_logistic loss的结果特别差，甚至不如pca聚类结果，原因已经在上文中分析，便是未考虑正负样本不均的情况。
 
-而其他结果也不理想的原因在论文中得到解答：由于cifar10数据集输入图片大小（32，32）比较小，resnet50第一个7\*7的卷积层和池化层严重的削弱了他的特征表达能力。因此论文附录中提到要修改第一个卷积层为3\*3 步长为1 并删去池化层。此外论文还提到要在数据预处理的阶段去除了高斯模糊变换，并设置颜色变换的力度为0.5。
+而其他结果也不理想的原因在论文中得到解答：
+
+由于cifar10数据集输入图片大小（32，32）比较小，resnet50第一个7\*7的卷积层和池化层严重的削弱了他的特征表达能力。因此论文附录中提到要修改第一个卷积层为3\*3 步长为1 并删去池化层。此外论文还提到要在数据预处理的阶段去除了高斯模糊变换，并设置颜色变换的力度为0.5。
 
 因此个人重新修改了模型和数据预处理响应的代码，重新训练。
 
@@ -112,7 +114,9 @@ nt_xent|resnet50|128|128|100|0.5|0.8387
 nt_logistic|resnet50|128|128|100|0.5|0.8094
 marginal_triplet|resnet50|128|128|100|1|0.8100
 
-##### 参数搜索的结果
+另外，需要说明的是这里并没有使用pre-train的模型，并且由于内存和时间的原因，采用了参数batchsize为128 epoch数量为100，因此和原文中cifar10所得的结果有一定相差，但基本在合理的范围内。
+#### 参数搜索的结果
+此外针对每一种loss 我进行了适当的参数搜索：
  Loss|Resnet | Feature demension | batchsize | epoch | t / m|CIFAR10 ACC|
 -|-|-|-|-|-|-
 nt_xent|resnet50|128|128|100|0.1|0.8387
@@ -125,7 +129,7 @@ marginal_triplet|resnet50|128|128|100|0|0.8100
 marginal_triplet|resnet50|128|128|100|0.5|0.8100
 marginal_triplet|resnet50|128|128|100|1|0.8100
 
-##### 对Loss的一些讨论
+#### 对Loss的一些讨论
 事实上可以看出来在实验对比下nt_xent 毫无疑问更有竞争力。
 
 论文中也提到，其他这几种loss都是使用与正负样本之间的绝对相似度进行loss的度量，而交叉熵则使用了相对的相似度进行计算（采用比值）。这样可能可以帮助网络更好的平衡各个样本间的差别，不会针对某些具有较大差异值的样本进行过多的优化。

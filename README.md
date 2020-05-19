@@ -69,6 +69,15 @@ CIFAR10数据集预处理和加载,加入了标准化操作去除高斯模糊，
 
 ![](https://latex.codecogs.com/svg.latex?L%20=%20\frac{1}{2N}\sum_{i}^{N}[l(2i,2i+1)+l(2i+1,2i)])
 
+代码实现
+```
+positives = torch.cat([l_pos, r_pos]).view(2 * self.batch_size, 1) 
+negatives = similarity_matrix[self.mask_samples_from_same_repr].view(2 * self.batch_size, -1) 
+logits =negatives-positives + self.m
+loss = torch.sum(self.activation(logits)) #relu
+return loss / (4*self.batch_size*(self.batch_size-1))
+```
+
 ##### NT_Logistic
 NT_logistic 可以理解为一种逻辑回归在这里的扩展版本。对于每个样本，他存在一个对应的正样本和2(N-1)个负样本。若把 ![](https://latex.codecogs.com/svg.latex?\sigma(s_{i,j}/\tau))视为样本i,j为相似样本的可能性，这个loss的目标即为获得最大似然估计。 
 
@@ -84,11 +93,24 @@ NT_logistic 可以理解为一种逻辑回归在这里的扩展版本。对于�
 
 但是这样训练的结果存在比较大的问题，即逻辑回归本质类似一个线性分类器，在正负样本有强烈不均的情况下，训练结果会有较大误差
 
-因此在考虑了转发样本数量的情况下，将loss修改为
+因此在考虑了正负样本数量的情况下，将loss修改为
 
 ![](https://latex.codecogs.com/svg.latex?L%20=%20\frac{1}{4N(N-1)}\sum_{i=1}^{N}%20(4(N-1)l(2i,2i+1)+\sum_{j=1}^{2N}1_{(j\neq%202i,j\neq%202i+1)}(l(2i,j)+l(2i+1,j))))
 
-这事实上相当于扩展正样本数量，使得loss计算时，重复计算正样本的对数似然误差至其和负样本数量一致。
+这事实上相当于扩展正样本数量，使得loss计算时，重复计算正样本的对数似然误差至其计算次数和负样本数量一致。
+
+代码实现
+```
+positives = torch.cat([l_pos, r_pos]).view(2 * self.batch_size, 1)
+negatives = similarity_matrix[self.mask_samples_from_same_repr].view(2 * self.batch_size, -1)*-1
+positives /= self.temperature
+positives= torch.log(self.activation(positives)) #sigmoid
+negatives/= self.temperature
+negatives = torch.log(self.activation(negatives))
+logits = positives +negatives
+loss = torch.sum(logits)
+return -loss / (4*(self.batch_size-1)*self.batch_size)
+```
 
 #### 基于cifar10数据集修改网络模型结果和数据预处理
 第一次模型基于三种loss(nt_logistic的实现为最初版本）的结果如下
@@ -116,7 +138,7 @@ marginal_triplet|resnet50|128|128|100|1|0.8100
 
 另外，需要说明的是这里并没有使用pre-train的模型，并且由于内存和时间的原因，采用了参数batchsize为128 epoch数量为100，因此和原文中cifar10所得的结果有一定相差，但基本在合理的范围内。
 #### 参数搜索的结果
-此外针对每一种loss 我进行了适当的参数搜索：
+此外针对每一种loss中需要的参数，我进行了适当的参数搜索：
  Loss|Resnet | Feature demension | batchsize | epoch | t / m|CIFAR10 ACC|
 -|-|-|-|-|-|-
 nt_xent|resnet50|128|128|100|0.1|0.8280

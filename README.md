@@ -40,7 +40,7 @@ marginal_triplet|resnet50|128|128|100|1|0.8100
 ./loss/nt_logistic.py
 ./loss/marginal_triplet.py
 ```
-CIFAR10数据集预处理和加载
+CIFAR10数据集预处理和加载,加入了标准化操作去除高斯模糊，修改颜色变换的权值。
 ```
 ./data_aug/data_wrapper.py
 ```
@@ -48,7 +48,7 @@ CIFAR10数据集预处理和加载
 ```
 ./model/resnet_simclr.py
 ```
-模型的评估文件
+模型的评估文件，采用逻辑回归进行评估预测。
 ```
 ./eval.py
 ```
@@ -119,14 +119,14 @@ marginal_triplet|resnet50|128|128|100|1|0.8100
 此外针对每一种loss 我进行了适当的参数搜索：
  Loss|Resnet | Feature demension | batchsize | epoch | t / m|CIFAR10 ACC|
 -|-|-|-|-|-|-
-nt_xent|resnet50|128|128|100|0.1|0.8387
+nt_xent|resnet50|128|128|100|0.1|0.8280
 nt_xent|resnet50|128|128|100|0.5|0.8387
-nt_xent|resnet50|128|128|100|1|0.8387
-nt_logistic|resnet50|128|128|100|0.1|0.8094
+nt_xent|resnet50|128|128|100|1|0.8097
+nt_logistic|resnet50|128|128|100|0.1|0.7355
 nt_logistic|resnet50|128|128|100|0.5|0.8094
-nt_logistic|resnet50|128|128|100|1|0.8094
-marginal_triplet|resnet50|128|128|100|0|0.8100
-marginal_triplet|resnet50|128|128|100|0.5|0.8100
+nt_logistic|resnet50|128|128|100|1|0.7530
+marginal_triplet|resnet50|128|128|100|0|0.1002
+marginal_triplet|resnet50|128|128|100|0.5|0.7762
 marginal_triplet|resnet50|128|128|100|1|0.8100
 
 #### 对Loss的一些讨论

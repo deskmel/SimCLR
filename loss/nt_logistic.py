@@ -54,7 +54,7 @@ class NTLogisticLoss(torch.nn.Module):
         negatives/= self.temperature
         negatives = torch.log(self.activation(negatives))
         logits = positives +negatives
-        print(logits.size())
+        #print(logits.size())
         #rint(negatives.size())
         #logits = torch.cat((positives, negatives), dim=1)
         #logits /= self.temperature

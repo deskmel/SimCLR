@@ -14,7 +14,7 @@ import torchvision
 import torchvision.transforms as transforms
 
 def eval(model,data_root,device,config):
-    train_loader,test_loader = load_dataset(data_root)
+    train_loader,test_loader = load_dataset(data_root,config)
     X_train_feature = []
     y_train = []
     for batch_x, batch_y in train_loader:
@@ -40,20 +40,9 @@ def eval(model,data_root,device,config):
     #print(y_test.shape)
     linear_model_eval(scaler.transform(X_train_feature), y_train, scaler.transform(X_test_feature), y_test)
 
-def load_data(data_root,prefix='train'):
-    X_train = np.fromfile(os.path.join(data_root,'./stl10_binary/' + prefix + '_X.bin'), dtype=np.uint8)
-    y_train = np.fromfile(os.path.join(data_root,'./stl10_binary/' + prefix + '_y.bin'), dtype=np.uint8)
 
-    X_train = np.reshape(X_train, (-1, 3, 96, 96)) # CWH
-    X_train = np.transpose(X_train, (0, 1, 3, 2)) # CHW
 
-    print("{} images".format(prefix))
-    print(X_train.shape)
-    print(y_train.shape)
-    
-    return X_train, y_train - 1
-
-def load_dataset(root = './data'):
+def load_dataset(root = './data',config):
     train_dataset = torchvision.datasets.CIFAR10(
         root,
         transform=transforms.Compose([transforms.ToTensor(),transforms.Normalize([0.4914, 0.4822, 0.4465], [0.2023, 0.1994, 0.2010])]),
@@ -69,7 +58,7 @@ def load_dataset(root = './data'):
 
     train_loader = torch.utils.data.DataLoader(
         train_dataset,
-        batch_size=512,
+        batch_size=config['batch_size'],
         shuffle=True,
         drop_last=True,
         num_workers=0,
@@ -77,7 +66,7 @@ def load_dataset(root = './data'):
 
     test_loader = torch.utils.data.DataLoader(
         test_dataset,
-        batch_size=512,
+        batch_size=config['batch_size'],
         shuffle=False,
         drop_last=True,
         num_workers=0,
@@ -90,11 +79,7 @@ def load_model(checkpoints_folder,device):
     model.load_state_dict(state_dict)
     model = model.to(device)
     return model
-def next_batch(X, y, batch_size):
-    for i in range(0, X.shape[0], batch_size):
-        X_batch = torch.tensor(X[i: i+batch_size]) 
-        y_batch = torch.tensor(y[i: i+batch_size])
-        yield X_batch.to(device), y_batch.to(device)
+
     
 def linear_model_eval(X_train, y_train, X_test, y_test):
     

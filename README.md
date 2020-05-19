@@ -83,7 +83,7 @@ NT_logistic 可以理解为一种逻辑回归在这里的扩展版本。对于�
 
 因此定义其对数似然损失为
 
-![](https://latex.codecogs.com/gif.latex?l%28i%2Cj%29%20%3D%20%5Cleft%5C%7B%20%5Cbegin%7Baligned%7D%20%26%20log%28%5Csigma%28s_%7Bi%2Cj%7D/%5Ctau%29%29%20%26%20if%20%28i%3Dj-1%2Cj%3Di-1%29%5C%5C%20%26%20log%28%5Csigma%28-s_%7Bi%2Cj%7D/%5Ctau%29%29%20%26%20otherwise%5C%5C%20%5Cend%7Baligned%7D%20%5Cright.)
+![](https://latex.codecogs.com/gif.latex?l%28i%2Cj%29%20%3D%20%5Cleft%5C%7B%20%5Cbegin%7Baligned%7D%20%26%20-log%28%5Csigma%28s_%7Bi%2Cj%7D/%5Ctau%29%29%20%26%20if%20%28i%3Dj-1%2Cj%3Di-1%29%5C%5C%20%26%20-log%28%5Csigma%28-s_%7Bi%2Cj%7D/%5Ctau%29%29%20%26%20otherwise%5C%5C%20%5Cend%7Baligned%7D%20%5Cright.)
 
 不过在开始阶段个人只是简单将所有对数似然损失加起来，并没有考虑样本数量的不对称性，因此最初的的实现版本为
 

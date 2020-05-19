@@ -40,7 +40,7 @@ marginal_triplet|resnet50|128|128|100|1|0.8100
 ./loss/nt_logistic.py
 ./loss/marginal_triplet.py
 ```
-CIFAR10数据集预处理和加载,加入了标准化操作去除高斯模糊，修改颜色变换的权值。
+CIFAR10数据集预处理和加载(加入了标准化操作,去除高斯模糊，修改颜色变换的权值)
 ```
 ./data_aug/data_wrapper.py
 ```
@@ -70,7 +70,7 @@ CIFAR10数据集预处理和加载,加入了标准化操作去除高斯模糊，
 ![](https://latex.codecogs.com/svg.latex?L%20=%20\frac{1}{2N}\sum_{i}^{N}[l(2i,2i+1)+l(2i+1,2i)])
 
 代码实现
-```
+```python
 positives = torch.cat([l_pos, r_pos]).view(2 * self.batch_size, 1) 
 negatives = similarity_matrix[self.mask_samples_from_same_repr].view(2 * self.batch_size, -1) 
 logits =negatives-positives + self.m
@@ -100,7 +100,7 @@ NT_logistic 可以理解为一种逻辑回归在这里的扩展版本。对于�
 这事实上相当于扩展正样本数量，使得loss计算时，重复计算正样本的对数似然误差至其计算次数和负样本数量一致。
 
 代码实现
-```
+```python
 positives = torch.cat([l_pos, r_pos]).view(2 * self.batch_size, 1)
 negatives = similarity_matrix[self.mask_samples_from_same_repr].view(2 * self.batch_size, -1)*-1
 positives /= self.temperature

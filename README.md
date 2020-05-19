@@ -139,6 +139,7 @@ marginal_triplet|resnet50|128|128|100|1|0.8100
 另外，需要说明的是这里并没有使用pre-train的模型，并且由于内存和时间的原因，采用了参数batchsize为128 epoch数量为100，因此和原文中cifar10所得的结果有一定相差，但基本在合理的范围内。
 #### 参数搜索的结果
 此外针对每一种loss中需要的参数，我进行了适当的参数搜索：
+一般margin的默认值为1而temperature 的默认值为0.5
  Loss|Resnet | Feature demension | batchsize | epoch | t / m|CIFAR10 ACC|
 -|-|-|-|-|-|-
 nt_xent|resnet50|128|128|100|0.1|0.8280
